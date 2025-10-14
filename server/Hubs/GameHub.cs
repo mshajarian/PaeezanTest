@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using GamePlay.Shared;
 using Microsoft.AspNetCore.SignalR;
+using Paeezan.Server.Models;
 using Paeezan.Server.Services;
 using Paeezan.Server.Services.RoomService;
 
@@ -16,7 +17,7 @@ namespace Paeezan.Server.Hubs
         {
             _rooms = rooms;
             _logger = logger;
-            _rooms.SetHubNotifiers(NotifyState, NotifyInitState, NotifyMatchEnd);
+            // _rooms.SetHubNotifiers(NotifyState, NotifyInitState, NotifyMatchEnd);
         }
 
 
@@ -36,6 +37,7 @@ namespace Paeezan.Server.Hubs
 
         public async Task JoinRoom(string code)
         {
+            code = code.ToUpper();
             var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Context.User
                 ?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
             if (userId == null)
@@ -93,15 +95,16 @@ namespace Paeezan.Server.Hubs
             }
         }
 
-        private void NotifyMatchEnd(string code, string winner, string loser)
+        private void NotifyMatchEnd(string PlayerAConnectionId , string PlayerBConnectionId , int winner)
         {
-            if (_rooms.TryGetByCode(code, out var room))
-            {
-                if (!string.IsNullOrEmpty(room.PlayerAConnectionId))
-                    Clients.Client(room.PlayerAConnectionId).SendAsync("GameEnded", new { winner, loser, code });
-                if (!string.IsNullOrEmpty(room.PlayerBConnectionId))
-                    Clients.Client(room.PlayerBConnectionId).SendAsync("GameEnded", new { winner, loser, code });
-            }
+            _logger.LogError("Send end game!");
+            _logger.LogError(PlayerAConnectionId);
+            _logger.LogError(winner.ToString());
+
+            if (!string.IsNullOrEmpty(PlayerAConnectionId))
+                Clients.Client(PlayerAConnectionId).SendAsync("GameEnded", new { winner });
+            if (!string.IsNullOrEmpty(PlayerBConnectionId))
+                Clients.Client(PlayerBConnectionId).SendAsync("GameEnded", new { winner});
         }
 
 

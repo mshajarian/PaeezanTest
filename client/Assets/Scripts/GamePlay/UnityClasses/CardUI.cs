@@ -27,8 +27,8 @@ namespace GamePlay.UnityClasses
 
         private void Deploy(UnitType type)
         {
-            var canDeploy = gamePlayController.PredictDeploy(type);
-            if (canDeploy)
+            // var canDeploy = gamePlayController.PredictDeploy(type);
+            // if (canDeploy)
                 signalR.DeployUnit(type);
         }
 

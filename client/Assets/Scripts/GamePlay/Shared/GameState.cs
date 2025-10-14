@@ -17,12 +17,17 @@ namespace GamePlay.Shared
         public int Winner { get; set; } = -1;
         public bool Finished { get; private set; }
 
-        public Func<string?>? GetPlayerAId { get; set; }
-        public Func<string?>? GetPlayerBId { get; set; }
+        [JsonIgnore]
+        public string? GetPlayerAId { get; set; }
+        [JsonIgnore]
+        public string? GetPlayerBId { get; set; }
 
         public event Action<GameState>? OnStateUpdated;
+        
         public event Action<string, string>? OnMatchEnded; // winnerUserId, loserUserId
+        [JsonIgnore]
         private int sendCounter = 0;
+        [JsonIgnore]
         private const int sendEvery = 30;
 
         public void SetConfig(Config config)
@@ -138,11 +143,11 @@ namespace GamePlay.Shared
                             Winner = u.Owner;
                             Finished = true;
                             var winner = Winner == 1
-                                ? GetPlayerBId?.Invoke() ?? string.Empty
-                                : GetPlayerAId?.Invoke() ?? string.Empty;
-                            var loser = winner == GetPlayerAId?.Invoke()
-                                ? GetPlayerBId?.Invoke() ?? string.Empty
-                                : GetPlayerAId?.Invoke() ?? string.Empty;
+                                ? GetPlayerBId ?? string.Empty
+                                : GetPlayerAId ?? string.Empty;
+                            var loser = winner == GetPlayerAId
+                                ? GetPlayerBId ?? string.Empty
+                                : GetPlayerAId ?? string.Empty;
                             OnMatchEnded?.Invoke(winner, loser);
                         }
 

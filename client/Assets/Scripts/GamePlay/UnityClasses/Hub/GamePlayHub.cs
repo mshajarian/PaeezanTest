@@ -46,9 +46,9 @@ namespace GamePlay.UnityClasses.Hub
             {
                 AuthenticationProvider = new HeaderAuthenticator(jwt),
                 ReconnectPolicy = new DefaultRetryPolicy(),
-                Options = {ConnectTimeout = TimeSpan.FromSeconds(60)}
+                Options = { ConnectTimeout = TimeSpan.FromSeconds(60) }
             };
-            
+
             _hub.OnConnected += Hub_OnConnected;
             _hub.OnError += Hub_OnError;
             _hub.OnClosed += Hub_OnClosed;
@@ -56,9 +56,8 @@ namespace GamePlay.UnityClasses.Hub
             {
                 Debug.Log(string.Format("Hub Error: <color=red>{0}</color>", errorMessage));
                 Error?.Invoke(errorMessage);
-                
             });
-            
+
             _hub.OnTransportEvent += (hubConnection, transport, ev) =>
                 Debug.Log(string.Format("Transport(<color=green>{0}</color>) event: <color=green>{1}</color>",
                     transport.TransportType, ev));
@@ -66,7 +65,12 @@ namespace GamePlay.UnityClasses.Hub
 
             _hub.On<GameState>("InitState", json => InitState?.Invoke(json));
             _hub.On<GameState>("UpdateState", stateJson => UpdateState?.Invoke(stateJson));
-            _hub.On<int>("GameEnded", winner => GameEnded?.Invoke(winner));
+            _hub.On<EndResponse>("GameEnded", res =>
+            {
+                Debug.Log($"GameEnded {res.winner}");
+
+                GameEnded?.Invoke(res.winner);
+            });
             _hub.On<int>("PlayerDisconnected", p => PlayerDisconnected?.Invoke(p));
             _hub.On<CreateRoomResponse>("RoomCreated", p => RoomCreated?.Invoke(p.code));
             _hub.On<MatchStartResponse>("MatchStart", p =>
@@ -86,7 +90,7 @@ namespace GamePlay.UnityClasses.Hub
         }
 
 
-        private  void Hub_OnConnected(HubConnection hub)
+        private void Hub_OnConnected(HubConnection hub)
         {
             Debug.Log((string.Format(
                 "Hub Connected with <color=green>{0}</color> transport using the <color=green>{1}</color> encoder.",
@@ -141,5 +145,12 @@ namespace GamePlay.UnityClasses.Hub
     {
         public string code;
         public int index;
+    }
+    
+    
+    [Serializable]
+    public class EndResponse
+    {
+        public int winner;
     }
 }

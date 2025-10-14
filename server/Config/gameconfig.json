@@ -1,6 +1,6 @@
 {
-  "tick_ms": 25,
-  "tower_hp": 1000,
+  "TickMs": 25,
+  "TowerHp": 1000,
   "units": {
     "melee": {
       "hp": 100,
@@ -19,7 +19,7 @@
       "cooldown": 15
     }
   },
-  "mana_regen_rate": 10,
-  "max_mana": 200,
-  "start_mana": 100
+  "ManaRegenRate": 10,
+  "MaxMana": 200,
+  "StartMana": 100
 }

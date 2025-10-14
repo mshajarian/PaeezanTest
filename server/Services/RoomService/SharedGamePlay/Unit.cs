@@ -16,6 +16,6 @@ namespace GamePlay.Shared
         public float Range { get; set; }
 
         [JsonIgnore] // Transient, not serialized
-        public object Target { get; set; }
+        public object? Target { get; set; }
     }
 }

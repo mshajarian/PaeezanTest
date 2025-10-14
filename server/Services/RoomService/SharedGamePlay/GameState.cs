@@ -17,13 +17,17 @@ namespace GamePlay.Shared
         public int Winner { get; set; } = -1;
         public bool Finished { get; private set; }
 
-        public Func<string?>? GetPlayerAId { get; set; }
-        public Func<string?>? GetPlayerBId { get; set; }
+        [JsonIgnore]
+        public string? GetPlayerAId { get; set; }
+        [JsonIgnore]
+        public string? GetPlayerBId { get; set; }
 
         public event Action<GameState>? OnStateUpdated;
-        public event Action<string, string>? OnMatchEnded; // winnerUserId, loserUserId
+        
+        [JsonIgnore]
         private int sendCounter = 0;
-        private const int sendEvery = 30;
+        [JsonIgnore]
+        private const int sendEvery = 300;
 
         public void SetConfig(Config config)
         {
@@ -75,9 +79,9 @@ namespace GamePlay.Shared
             return true;
         }
 
-        public bool Tick(float deltaTime)
+        public int Tick(float deltaTime)
         {
-            if (Finished) return true;
+            if (Finished) return -1;
 
             // Regen mana and cooldowns
             foreach (var p in Players)
@@ -137,13 +141,6 @@ namespace GamePlay.Shared
                         {
                             Winner = u.Owner;
                             Finished = true;
-                            var winner = Winner == 1
-                                ? GetPlayerBId?.Invoke() ?? string.Empty
-                                : GetPlayerAId?.Invoke() ?? string.Empty;
-                            var loser = winner == GetPlayerAId?.Invoke()
-                                ? GetPlayerBId?.Invoke() ?? string.Empty
-                                : GetPlayerAId?.Invoke() ?? string.Empty;
-                            OnMatchEnded?.Invoke(winner, loser);
                         }
 
                         break;
@@ -157,11 +154,13 @@ namespace GamePlay.Shared
             if (sendCounter % sendEvery == 0 && !Finished)
                 OnStateUpdated?.Invoke(this);
             
-            return Winner != -1;
+            return Winner ;
         }
 
         public string ToJson()
         {
+            foreach (var unit in Units)
+                unit.Target = null;
             return JsonConvert.SerializeObject(this);
         }
     }
