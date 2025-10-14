@@ -1,0 +1,25 @@
+{
+  "tick_ms": 25,
+  "tower_hp": 1000,
+  "units": {
+    "melee": {
+      "hp": 100,
+      "damage": 20,
+      "speed": 1.0,
+      "range": 1.0,
+      "cost": 50,
+      "cooldown": 10
+    },
+    "ranged": {
+      "hp": 80,
+      "damage": 15,
+      "speed": 0.8,
+      "range": 5.0,
+      "cost": 70,
+      "cooldown": 15
+    }
+  },
+  "mana_regen_rate": 10,
+  "max_mana": 200,
+  "start_mana": 100
+}
